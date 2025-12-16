@@ -1,0 +1,45 @@
+import os
+import time
+print("Imported os")
+print("Imported time")
+
+#Delay Function
+def Delay(Time):
+  time.sleep(Time)
+Delay(1)
+
+#File Handling
+if os.path.exists("file.txt"):
+  os.remove("file.txt")
+  print("Removed file.txt")
+else:
+  print("file.txt does not exist")
+Delay(1)
+
+file = open("file.txt", "x")
+print("Created file.txt")
+Delay(1)
+
+#Creating Variables
+Value = 0
+VPS = 1
+print("Created Variables")
+Delay(1)
+
+#Clearing Console
+print("Setup Complete")
+Delay(1)
+print("Clearing Console...")
+Delay(2)
+os.system('clear')
+
+#Game Script
+def Repeat():
+  #draw file
+  with open("file.txt", "w") as file:
+    file.write("Value: " + str(Value) + "\n"
+      + "VPS: " + str(VPS) + "\n")
+  with open("file.txt", "r") as file:
+    print(file.read())
+
+Repeat()
