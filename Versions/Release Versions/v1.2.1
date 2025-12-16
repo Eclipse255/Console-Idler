@@ -1,0 +1,287 @@
+import os
+from re import S
+import time
+import select
+import sys
+print("Imported os")
+print("Imported time")
+
+
+#Delay Function
+def Delay(Time):
+  time.sleep(Time)
+Delay(1)
+
+
+#File Handling
+if os.path.exists("file.txt"):
+  os.remove("file.txt")
+  print("Removed file.txt")
+else:
+  print("file.txt does not exist")
+Delay(1)
+
+file = open("file.txt", "x")
+print("Created file.txt")
+Delay(1)
+
+
+#Creating Variables
+Value = 0
+VPS = 1
+Upgrades = ("+1 VPS", "+5 VPS", "+10 VPS", "+20 VPS", "+50 VPS", "+700 VPS", "+1500 VPS", "+5000 VPS", "+10000 VPS", "+1000000 VPS", "+5000000 VPS", "+15000000 VPS")
+UpgradeCosts = [10, 50, 100, 500, 5000, 50000, 100000, 500000, 1000000, 10000000, 50000000, 100000000]
+VPSUpgrades = (1, 5, 10, 20, 50, 700, 1500, 5000, 10000, 1000000, 5000000, 15000000)
+UpgradeNumbers = ("1", "2", "3", "4", "5", "6", "7", "8", "9")
+Achievements = ["???", "???", "???", "???", "???", "???", "???", "???", "???", "???", "???", "???"]
+UpgradeAmounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+CanAfford = ["Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!", "Too Expensive!"]
+Rows = 1
+RowType = 1
+Multiplier = 1.0
+VersionNumber = "1.2.1"
+ShopNumber = 1
+print("Created Variables")
+Delay(1)
+
+
+#Load Save
+def CheckFile():
+  global Value
+  global VPS
+  if os.path.exists("SaveFile.txt"):
+    print("SaveFile.txt exists")
+
+    FileLine = 0
+
+    with open("SaveFile.txt", "r") as savefile:
+      for line in savefile:
+        print(line.strip())
+        FileLine += 1
+        if FileLine == 1:
+          Value = int(line.strip())
+        if FileLine == 2:
+          VPS = int(line.strip())
+        if FileLine >= 3 and FileLine <= 14:
+          UpgradeCosts[FileLine - 3] = int(line.strip())
+        if FileLine >= 15 and FileLine <= 26:
+          Achievements[FileLine - 15] = str(line.strip())
+        if FileLine >= 27 and FileLine <= 38:
+          UpgradeAmounts[FileLine - 27] = int(line.strip())
+        if FileLine == 39:
+          if line.strip() == ("v" + VersionNumber):
+            print("Up to date")
+          else:
+            UserInput = input("This save is outdated and may cause errors! Do you want to continue?\n(New Save permanently deletes your existing save!)\nContinue (1)\nNew Save (2)\n")
+            if UserInput == "1":
+              print("Continue")
+            elif UserInput == "2":
+              print("New Save")
+              Delay(1)
+              os.remove("SaveFile.txt")
+              savefile = open("SaveFile.txt", "x")
+              print("Created SaveFile.txt")
+              with open("SaveFile.txt", "w") as savefile:
+                savefile.write("NaN")
+              with open("SaveFile.txt", "r") as savefile:
+                savefile.read(0)
+      Delay(2)
+      print("Loaded Save")
+      Delay(1)
+          
+  else:
+    print("SaveFile.txt does not exist")
+    savefile = open("SaveFile.txt", "x")
+    print("Created SaveFile.txt")
+    with open("SaveFile.txt", "w") as savefile:
+      savefile.write("NaN")
+    with open("SaveFile.txt", "r") as savefile:
+      savefile.read(0)
+      
+def AskSave():
+  UserInput = input("(New Save permanently deletes your existing save!)\nNew Save (1)\nLoad Save (2)\n")
+  if UserInput == "1":
+    print("New Save")
+    Delay(1)
+    os.remove("SaveFile.txt")
+    savefile = open("SaveFile.txt", "x")
+    print("Created SaveFile.txt")
+    with open("SaveFile.txt", "w") as savefile:
+      savefile.write("NaN")
+    with open("SaveFile.txt", "r") as savefile:
+      savefile.read(0)
+
+
+  elif UserInput == "2":
+    print("Load Save")
+    Delay(1)
+    CheckFile()
+
+
+AskSave()
+
+
+#Clearing Console
+print("Setup Complete")
+Delay(1)
+print("Clearing Console...")
+Delay(2)
+os.system('clear')
+
+
+#Game Script
+def Upgrade(Input):
+  global Value
+  global VPS
+  global UpgradeNumbers
+  global UpgradeCosts
+  global ShopNumber
+  if Input in UpgradeNumbers:
+    if ShopNumber == 1:
+      if Value >= UpgradeCosts[int(Input) - 1]:
+        Value -= UpgradeCosts[int(Input) - 1]
+        VPS += VPSUpgrades[int(Input) - 1]
+        UpgradeAmounts[int(Input) - 1] += 1
+        UpgradeCosts[int(Input) - 1] *= 1.5
+        UpgradeCosts[int(Input) - 1] = int(round(UpgradeCosts[int(Input) - 1], 0))
+    elif ShopNumber == 2:
+      if Value >= UpgradeCosts[int(Input) + 8]:
+        Value -= UpgradeCosts[int(Input) + 8]
+        VPS += VPSUpgrades[int(Input) + 8]
+        UpgradeAmounts[int(Input) + 8] += 1
+        UpgradeCosts[int(Input) + 8] *= 1.5
+        UpgradeCosts[int(Input) + 8] = int(round(UpgradeCosts[int(Input) + 8], 0))
+  elif Input == "0":
+    if ShopNumber == 1:
+      ShopNumber = 2
+    elif ShopNumber == 2:
+      ShopNumber = 1
+  
+  Repeat()
+
+def Repeat():
+
+  Delay(0)
+
+  os.system('clear')
+
+  #Globalizing Variables
+  global Value
+  global VPS
+  global Upgrades
+  global UpgradeCosts
+  global Rows
+  global Achievements
+  global RowType
+  global Multiplier
+
+  #Updating Variables
+  Rows = 0
+  Multiplier = 1.0
+  for y in range(len(Achievements)):
+    if not Achievements[y] == "???":
+      Rows += 1
+      Multiplier = round((Multiplier + 0.1), 1)
+    if Rows >= 10:
+      RowType = 3
+    elif Rows >= 5:
+      RowType = 2
+
+  Value = int(round(Value + (VPS * Multiplier), 0))
+
+  for i in range(len(UpgradeCosts)):
+    if Value >= UpgradeCosts[i]:
+      CanAfford[i] = "Can Afford!"
+    else:
+      CanAfford[i] = "Too Expensive!"
+
+  #draw file
+  with open("file.txt", "w") as file:
+
+    file.write("Value: " + str(Value) + "\n"
+      + "VPS: " + str(VPS) + "\n"
+              + "Multiplier: " + str(Multiplier))
+
+  with open("file.txt", "a") as file:
+
+    file.write("\n--------------------")
+    file.write("\nUpgrades:")
+    if ShopNumber == 1:
+      for i in range(len(Upgrades)):
+        if i <= 8:
+          file.write("\n" + Upgrades[i] + ", Cost: " + str(UpgradeCosts[i]) + ", Amount: " + str(UpgradeAmounts[i]) + ", (" + CanAfford[i] + ")")
+    if ShopNumber == 2:
+      for i in range(len(Upgrades)):
+        if i >= 9:
+          file.write("\n" + Upgrades[i] + ", Cost: " + str(UpgradeCosts[i]) + ", Amount: " + str(UpgradeAmounts[i]) + ", (" + CanAfford[i] + ")")
+    file.write("\nSwitch Shop (0)")
+
+    file.write("\n--------------------")
+    file.write("\nAchievements:")
+    for x in range(len(Achievements)):
+      file.write("\n" + Achievements[x])
+
+    for f in range(Rows):
+      if RowType == 1:
+        file.write("\n------------------------------")
+      elif RowType == 2:
+        file.write("\n==============================")
+      elif RowType == 3:
+        file.write("\n++++++++++++++++++++++++++++++")
+  with open("file.txt", "r") as file:
+    print(file.read())
+
+  Delay(1)
+
+  #give achievements
+  if Value >= 10:
+    Achievements[0] = "New Start"
+  if Value >= 100:
+    Achievements[1] = "Triple Digits"
+  if VPS >= 100:
+    Achievements[2] = "Fast Production"
+  if Value >= 1000000:
+    Achievements[3] = "Millionaire"
+  if VPS >= 1000:
+    Achievements[4] = "Mass Production"
+  if Value >= 1000:
+    Achievements[6] = "Quadruple Digits"
+  if Multiplier > 1:
+    Achievements[7] = "Multiply"
+  if Multiplier >= 2:
+    Achievements[8] = "Double the Money"
+  if VPS >= 100000:
+    Achievements[9] = "Hundreds of Thousands"
+  if Value >= 10000000:
+    Achievements[10] = "Million x10"
+  if VPS >= 100000000:
+    Achievements[11] = "Hundreds of Millions"
+
+  #Check for input
+  input_ready = select.select([sys.stdin], [], [], 0)[0]
+  if input_ready:
+    Input = sys.stdin.readline().strip()
+    if Input == "v":
+      Achievements[5] = "Secret key"
+    else:
+      Upgrade(Input)
+      
+  #Save Game
+  with open("SaveFile.txt", "w") as savefile:
+    WV = str(Value)
+    savefile.write(WV)
+  with open("SaveFile.txt", "a") as savefile:
+    WVPS = str(VPS)
+    savefile.write("\n" + WVPS)
+    for i in UpgradeCosts:
+      savefile.write("\n" + str(i))
+    for x in Achievements:
+      savefile.write("\n" + str(x))
+    for j in UpgradeAmounts:
+      savefile.write("\n" + str(j))
+    savefile.write("\n" + "v" + VersionNumber)
+
+  Repeat()
+#End of Game Script
+
+Repeat()
